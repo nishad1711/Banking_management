@@ -14,10 +14,12 @@ public class Transaction {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long txt_id;
-    private long transaction_id;
-    private double balance;
-    private LocalTime created_time;
-    private LocalDate created_date;
+
+    private long sender_id;
+    private long receiver_id;
+    private double amount;
+    private LocalTime sending_time;
+    private LocalDate sending_date;
     private boolean status;
 
 }
