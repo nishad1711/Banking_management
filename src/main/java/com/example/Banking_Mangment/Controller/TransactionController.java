@@ -1,14 +1,14 @@
 package com.example.Banking_Mangment.Controller;
 
+import com.example.Banking_Mangment.Dto.PersonTransactionalHistoryDto;
 import com.example.Banking_Mangment.Dto.TransactionTransferDto;
 import com.example.Banking_Mangment.Dto.TransactiondetailsDto;
 import com.example.Banking_Mangment.Service.TransactionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/transaction")
@@ -19,5 +19,8 @@ public class TransactionController {
     public ResponseEntity<TransactiondetailsDto> sentmoney(@RequestBody TransactionTransferDto transactionTransferDto) {
        return ResponseEntity.ok(transactionService.transferMoney(transactionTransferDto));
     }
-
+    @GetMapping("/{id}")
+    public ResponseEntity<List<PersonTransactionalHistoryDto>>get(@PathVariable("id") long id) {
+        return ResponseEntity.ok(transactionService.personTransactionalHistory(id));
+    }
 }

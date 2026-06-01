@@ -15,8 +15,8 @@ public class Transaction {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long txt_id;
 
-    private long sender_id;
-    private long receiver_id;
+    private long senderId;
+    private long receiverId;
     private double amount;
     private LocalTime sending_time;
     private LocalDate sending_date;

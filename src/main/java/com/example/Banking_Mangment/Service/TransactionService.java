@@ -1,5 +1,6 @@
 package com.example.Banking_Mangment.Service;
 
+import com.example.Banking_Mangment.Dto.PersonTransactionalHistoryDto;
 import com.example.Banking_Mangment.Dto.TransactionTransferDto;
 import com.example.Banking_Mangment.Dto.TransactiondetailsDto;
 import com.example.Banking_Mangment.Entity.Account;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @Service
@@ -58,8 +61,8 @@ public class TransactionService {
         accountRepository.save(receiver);
 
         Transaction transaction = new Transaction();
-        transaction.setSender_id(sender.getAccount_id());
-        transaction.setReceiver_id(receiver.getAccount_id());
+        transaction.setSenderId(sender.getAccount_id());
+        transaction.setReceiverId(receiver.getAccount_id());
         transaction.setAmount(transactionTransferDto.getAmount());
         transaction.setStatus(true);
         transaction.setSending_time(LocalTime.now());
@@ -67,5 +70,41 @@ public class TransactionService {
 
         transactionRepository.save(transaction);
         return modelMapper.map(transaction, TransactiondetailsDto.class);
+    }
+    public List<PersonTransactionalHistoryDto> personTransactionalHistory(long userId) {
+
+        List<Account> accounts =  accountRepository.findByPersonUserId(userId);
+
+        List<PersonTransactionalHistoryDto> history = new ArrayList<>();
+
+        for (Account account : accounts) {
+
+            List<Transaction> transactions =
+                    transactionRepository.findBySenderId(account.getAccount_id());
+
+            for (Transaction tx : transactions) {
+
+                Account receiverAccount =
+                        accountRepository.findById(tx.getReceiverId())
+                                .orElseThrow();
+
+                String receiverName =
+                        receiverAccount.getPerson().getName();
+
+                PersonTransactionalHistoryDto dto =
+                        new PersonTransactionalHistoryDto(
+                                tx.getAmount(),
+                                tx.getSending_time(),
+                                tx.getSending_date(),
+                                tx.isStatus(),
+                                receiverName,
+                                tx.getSenderId()
+                        );
+
+                history.add(dto);
+            }
+        }
+
+        return history;
     }
 }

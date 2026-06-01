@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @NoArgsConstructor
@@ -13,11 +14,19 @@ import java.time.LocalTime;
 public class Account {
     @Id
     private Long account_id;
+
     @Column(name = "phone no.", unique = true, nullable = false)
     @Pattern(regexp = "^\\d{10}$", message = "Value must be exactly 10 digits")
     private String phoneNumber;
-    private Long user_id;
+
+    @ManyToOne
+    @JoinColumn(name = "personId")
+    private Person person;
+
     private double balance;
+
     private LocalTime created_at;
+
+
 
 }
