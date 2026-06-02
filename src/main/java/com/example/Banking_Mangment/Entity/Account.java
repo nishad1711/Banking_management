@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,6 +28,10 @@ public class Account {
 
     private LocalTime created_at;
 
+    @OneToMany(mappedBy = "account")
+    private List<Loan> loans = new ArrayList<>();
+    @OneToMany(mappedBy = "account")
+    private List<Insurance> insurances = new ArrayList<>();
 
 
 }

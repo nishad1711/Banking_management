@@ -24,3 +24,39 @@ VALUES (1004, '4567890123', 2, 99999, CURRENT_TIME);
 INSERT INTO account (account_id, "phone no.", person_id, balance, created_at)
 VALUES (1005, '5678901234', 3, 1200, CURRENT_TIME);
 
+-- LOAN
+-- account_id links the loan to an account
+
+INSERT INTO loan
+(amount, interest_rate, tenure_months, type, provider_type, status, account_id)
+VALUES
+(500000, 8.5, 120, 'HOME', 'BANK', 'APPROVED', 1001);
+
+INSERT INTO loan
+(amount, interest_rate, tenure_months, type, provider_type, status, account_id)
+VALUES
+(100000, 10.5, 36, 'PERSONAL', 'NBFC', 'APPROVED', 1002);
+
+INSERT INTO loan
+(amount, interest_rate, tenure_months, type, provider_type, status, account_id)
+VALUES
+(750000, 7.2, 180, 'EDUCATION', 'GOVERNMENT', 'APPLIED', 1004);
+
+
+-- INSURANCE
+-- account_id links the insurance to an account
+
+INSERT INTO insurance
+(coverage_amount, premium_amount, type, status, account_id)
+VALUES
+(500000, 5000, 'HEALTH', 'ACTIVE', 1001);
+
+INSERT INTO insurance
+(coverage_amount, premium_amount, type, status, account_id)
+VALUES
+(1000000, 12000, 'LIFE', 'ACTIVE', 1003);
+
+INSERT INTO insurance
+(coverage_amount, premium_amount, type, status, account_id)
+VALUES
+(300000, 2500, 'VEHICLE', 'EXPIRED', 1005);

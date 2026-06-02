@@ -6,7 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -23,7 +25,6 @@ public class Person {
     private LocalDate created_at_d;
     @OneToMany(mappedBy = "person")
     private List<Account> accounts;
-
 
 
 
