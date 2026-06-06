@@ -114,6 +114,33 @@ INSERT INTO loan
 VALUES
 (750000, 7.2, 180, 'EDUCATION', 'GOVERNMENT', 'APPLIED', 1004);
 
+-- INSURANCE SCHEMAS
+
+INSERT INTO insurance_schema
+(coverage_amount, premium_amount, type, status)
+VALUES
+(500000, 5000, 'HEALTH', 'ACTIVE');
+
+INSERT INTO insurance_schema
+(coverage_amount, premium_amount, type, status)
+VALUES
+(1000000, 12000, 'LIFE', 'ACTIVE');
+
+INSERT INTO insurance_schema
+(coverage_amount, premium_amount, type, status)
+VALUES
+(300000, 2500, 'VEHICLE', 'ACTIVE');
+
+INSERT INTO insurance_schema
+(coverage_amount, premium_amount, type, status)
+VALUES
+(1500000, 8000, 'HOME', 'ACTIVE');
+
+INSERT INTO insurance_schema
+(coverage_amount, premium_amount, type, status)
+VALUES
+(200000, 1500, 'TRAVEL', 'ACTIVE');
+
 
 -- INSURANCE
 -- account_id links the insurance to an account
