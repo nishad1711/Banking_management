@@ -22,19 +22,13 @@ public class Loan {
     private Double amount;
 
     @Enumerated(EnumType.STRING)
-    private LoanType type;
-
-    @Enumerated(EnumType.STRING)
-    private LoanProviderType providerType;
-
-    private Double interestRate;
-
-    private Integer tenureMonths;
-
-    @Enumerated(EnumType.STRING)
     private LoanStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "accountId")
+    @JoinColumn(name = "account_id")
     private Account account;
+
+    @ManyToOne
+    @JoinColumn(name = "loan_schema_id")
+    private LoanSchema loanSchema;
 }

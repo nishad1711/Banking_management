@@ -1,5 +1,6 @@
 package com.example.Banking_Mangment.Controller;
 
+import com.example.Banking_Mangment.Entity.Insurance;
 import com.example.Banking_Mangment.Entity.InsuranceSchema;
 import com.example.Banking_Mangment.Entity.LoanSchema;
 import com.example.Banking_Mangment.Entity.Type.InsuranceType;
@@ -8,10 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,44 +17,57 @@ import java.util.List;
 @RequestMapping("/Insurance")
 @RequiredArgsConstructor
 public class InsuranceSchemaController {
+
     private final InsuranceService insuranceService;
+
     @GetMapping("/AvailableInsurance")
-    public ResponseEntity<Page<InsuranceSchema>> getLoans(
+    public ResponseEntity<Page<InsuranceSchema>> getAvailableInsurance(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
 
         return ResponseEntity.ok(
-                insuranceService.showLoanDetails(page, size)
+                insuranceService.showInsuranceDetails(page, size)
         );
     }
-    @GetMapping("/searchinsurance/keyword")
-    public ResponseEntity<List<InsuranceSchema>> getproductbykeyword(@RequestParam("keyword") String keyword){
-        List<InsuranceSchema> insurance = insuranceService.getinsurancebykeyword(keyword);
-        if(insurance == null){
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-        return new ResponseEntity<>(insurance, HttpStatus.OK);
+
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<List<InsuranceSchema>> getInsuranceByKeyword(
+            @PathVariable String keyword) {
+
+        return ResponseEntity.ok(
+                insuranceService.getinsurancebykeyword(keyword)
+        );
     }
+
     @GetMapping("/filter")
     public ResponseEntity<List<InsuranceSchema>> filterInsurance(
 
-            @RequestParam(required = false)
-            InsuranceType type,
-
-            @RequestParam(required = false)
-            Double coverageAmount,
-
-            @RequestParam(required = false)
-            Double premiumAmount
+            @RequestParam(required = false) InsuranceType type,
+            @RequestParam(required = false) Double coverageAmount,
+            @RequestParam(required = false) Double premiumAmount
     ) {
 
-        List<InsuranceSchema> insurances =
+        return ResponseEntity.ok(
                 insuranceService.filterInsurance(
                         type,
                         coverageAmount,
                         premiumAmount
-                );
+                )
+        );
+    }
+    @PostMapping("/apply")
+    public ResponseEntity<Insurance> applyInsurance(
 
-        return ResponseEntity.ok(insurances);
+            @RequestParam Long accountId,
+
+            @RequestParam Long insuranceSchemaId
+    ) {
+
+        return ResponseEntity.ok(
+                insuranceService.applyInsurance(
+                        accountId,
+                        insuranceSchemaId
+                )
+        );
     }
 }

@@ -11,21 +11,25 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 
 public interface LoanSchemaRepository extends JpaRepository<LoanSchema, Long> {
+
     @Query("""
-       SELECT l
-       FROM LoanSchema l
-       WHERE LOWER(str(l.loanType)) LIKE LOWER(CONCAT('%', :keyword, '%'))
-          OR LOWER(str(l.providerType)) LIKE LOWER(CONCAT('%', :keyword, '%'))
-       """)
+        SELECT l
+        FROM LoanSchema l
+        WHERE LOWER(str(l.loanType))
+              LIKE LOWER(CONCAT('%', :keyword, '%'))
+           OR LOWER(str(l.providerType))
+              LIKE LOWER(CONCAT('%', :keyword, '%'))
+        """)
     List<LoanSchema> searchLoan(@Param("keyword") String keyword);
+
     @Query("""
         SELECT l
         FROM LoanSchema l
         WHERE (:loanType IS NULL OR l.loanType = :loanType)
           AND (:providerType IS NULL OR l.providerType = :providerType)
-          AND (:maxAmount IS NULL OR l.maxAmount <= :maxAmount)
+          AND (:maxAmount IS NULL OR l.maxAmount >= :maxAmount)
           AND (:interestRate IS NULL OR l.interestRate <= :interestRate)
-          AND (:tenureMonths IS NULL OR l.tenureMonths <= :tenureMonths)
+          AND (:tenureMonths IS NULL OR l.tenureMonths >= :tenureMonths)
           AND l.active = true
         """)
     List<LoanSchema> filterLoans(

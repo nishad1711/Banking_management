@@ -13,15 +13,15 @@ public interface InsuranceSchemaRepository extends JpaRepository<InsuranceSchema
        SELECT i
        FROM InsuranceSchema i
        WHERE LOWER(str(i.type)) LIKE LOWER(CONCAT('%', :keyword, '%'))
-          OR LOWER(str(i.status)) LIKE LOWER(CONCAT('%', :keyword, '%'))
        """)
     List<InsuranceSchema> searchInsurance(@Param("keyword") String keyword);
+
 
     @Query("""
         SELECT i
         FROM InsuranceSchema i
         WHERE (:type IS NULL OR i.type = :type)
-          AND (:coverageAmount IS NULL OR i.coverageAmount <= :coverageAmount)
+          AND (:coverageAmount IS NULL OR i.coverageAmount >= :coverageAmount)
           AND (:premiumAmount IS NULL OR i.premiumAmount <= :premiumAmount)
         """)
     List<InsuranceSchema> filterInsurance(

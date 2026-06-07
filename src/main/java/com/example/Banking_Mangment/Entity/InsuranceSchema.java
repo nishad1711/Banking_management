@@ -21,8 +21,4 @@ public class InsuranceSchema {
 
     @Enumerated(EnumType.STRING)
     private InsuranceType type;
-
-    @Enumerated(EnumType.STRING)
-    private InsuranceStatus status;
-
 }

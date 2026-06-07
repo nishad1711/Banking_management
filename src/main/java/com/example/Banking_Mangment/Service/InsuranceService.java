@@ -1,8 +1,13 @@
 package com.example.Banking_Mangment.Service;
 
+import com.example.Banking_Mangment.Entity.Account;
+import com.example.Banking_Mangment.Entity.Insurance;
 import com.example.Banking_Mangment.Entity.InsuranceSchema;
 import com.example.Banking_Mangment.Entity.LoanSchema;
+import com.example.Banking_Mangment.Entity.Type.InsuranceStatus;
 import com.example.Banking_Mangment.Entity.Type.InsuranceType;
+import com.example.Banking_Mangment.Repository.AccountRepository;
+import com.example.Banking_Mangment.Repository.InsuranceRepository;
 import com.example.Banking_Mangment.Repository.InsuranceSchemaRepository;
 import com.example.Banking_Mangment.Repository.LoanSchemaRepository;
 import lombok.RequiredArgsConstructor;
@@ -17,8 +22,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class InsuranceService {
     private final InsuranceSchemaRepository insuranceSchemaRepository;
+    private final InsuranceRepository insuranceRepository;
+    private final AccountRepository accountRepository;
 
-    public Page<InsuranceSchema> showLoanDetails(int page, int size) {
+    public Page<InsuranceSchema> showInsuranceDetails(int page, int size) {
 
         Pageable pageable = PageRequest.of(page, size);
 
@@ -39,6 +46,28 @@ public class InsuranceService {
                 coverageAmount,
                 premiumAmount
         );
+    }
+    public Insurance applyInsurance(
+            Long accountId,
+            Long insuranceSchemaId
+    ) {
+
+        Account account = accountRepository.findById(accountId)
+                .orElseThrow(() ->
+                        new RuntimeException("Account not found"));
+
+        InsuranceSchema insuranceSchema =
+                insuranceSchemaRepository.findById(insuranceSchemaId)
+                        .orElseThrow(() ->
+                                new RuntimeException("Insurance Plan not found"));
+
+        Insurance insurance = new Insurance();
+
+        insurance.setAccount(account);
+        insurance.setInsuranceSchema(insuranceSchema);
+        insurance.setStatus(InsuranceStatus.ACTIVE);
+
+        return insuranceRepository.save(insurance);
     }
 
 }

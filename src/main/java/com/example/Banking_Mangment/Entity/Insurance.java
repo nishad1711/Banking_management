@@ -18,17 +18,14 @@ public class Insurance {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private Double coverageAmount;
-
-    private Double premiumAmount;
-
-    @Enumerated(EnumType.STRING)
-    private InsuranceType type;
-
     @Enumerated(EnumType.STRING)
     private InsuranceStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "accountId")
+    @JoinColumn(name = "account_id")
     private Account account;
+
+    @ManyToOne
+    @JoinColumn(name = "insurance_schema_id")
+    private InsuranceSchema insuranceSchema;
 }

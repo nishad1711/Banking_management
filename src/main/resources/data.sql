@@ -99,64 +99,77 @@ VALUES
 -- LOAN
 -- account_id links the loan to an account
 
-INSERT INTO loan
-(amount, interest_rate, tenure_months, type, provider_type, status, account_id)
-VALUES
-(500000, 8.5, 120, 'HOME', 'BANK', 'APPROVED', 1001);
+-- LOANS TAKEN BY ACCOUNTS
 
 INSERT INTO loan
-(amount, interest_rate, tenure_months, type, provider_type, status, account_id)
+(amount, status, account_id, loan_schema_id)
 VALUES
-(100000, 10.5, 36, 'PERSONAL', 'NBFC', 'APPROVED', 1002);
+(500000, 'APPROVED', 1001, 1);
 
 INSERT INTO loan
-(amount, interest_rate, tenure_months, type, provider_type, status, account_id)
+(amount, status, account_id, loan_schema_id)
 VALUES
-(750000, 7.2, 180, 'EDUCATION', 'GOVERNMENT', 'APPLIED', 1004);
+(100000, 'APPROVED', 1002, 4);
+
+INSERT INTO loan
+(amount, status, account_id, loan_schema_id)
+VALUES
+(750000, 'APPLIED', 1004, 7);
+
+-- Another user taking the same HOME loan scheme
+
+INSERT INTO loan
+(amount, status, account_id, loan_schema_id)
+VALUES
+(300000, 'APPROVED', 1003, 1);
 
 -- INSURANCE SCHEMAS
 
 INSERT INTO insurance_schema
-(coverage_amount, premium_amount, type, status)
+(coverage_amount, premium_amount, type)
 VALUES
-(500000, 5000, 'HEALTH', 'ACTIVE');
+(500000, 5000, 'HEALTH');
 
 INSERT INTO insurance_schema
-(coverage_amount, premium_amount, type, status)
+(coverage_amount, premium_amount, type)
 VALUES
-(1000000, 12000, 'LIFE', 'ACTIVE');
+(1000000, 12000, 'LIFE');
 
 INSERT INTO insurance_schema
-(coverage_amount, premium_amount, type, status)
+(coverage_amount, premium_amount, type)
 VALUES
-(300000, 2500, 'VEHICLE', 'ACTIVE');
+(300000, 2500, 'VEHICLE');
 
 INSERT INTO insurance_schema
-(coverage_amount, premium_amount, type, status)
+(coverage_amount, premium_amount, type)
 VALUES
-(1500000, 8000, 'HOME', 'ACTIVE');
+(1500000, 8000, 'HOME');
 
 INSERT INTO insurance_schema
-(coverage_amount, premium_amount, type, status)
+(coverage_amount, premium_amount, type)
 VALUES
-(200000, 1500, 'TRAVEL', 'ACTIVE');
+(200000, 1500, 'TRAVEL');
 
-
--- INSURANCE
--- account_id links the insurance to an account
+-- INSURANCE PURCHASED BY ACCOUNTS
 
 INSERT INTO insurance
-(coverage_amount, premium_amount, type, status, account_id)
+(status, account_id, insurance_schema_id)
 VALUES
-(500000, 5000, 'HEALTH', 'ACTIVE', 1001);
+('ACTIVE', 1001, 1);
 
 INSERT INTO insurance
-(coverage_amount, premium_amount, type, status, account_id)
+(status, account_id, insurance_schema_id)
 VALUES
-(1000000, 12000, 'LIFE', 'ACTIVE', 1003);
+('ACTIVE', 1003, 2);
 
 INSERT INTO insurance
-(coverage_amount, premium_amount, type, status, account_id)
+(status, account_id, insurance_schema_id)
 VALUES
-(300000, 2500, 'VEHICLE', 'EXPIRED', 1005);
+('EXPIRED', 1005, 3);
 
+-- Same HEALTH plan purchased by another account
+
+INSERT INTO insurance
+(status, account_id, insurance_schema_id)
+VALUES
+('ACTIVE', 1002, 1);
