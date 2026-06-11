@@ -8,6 +8,10 @@ import java.util.Optional;
 
 public interface AccountRepository extends JpaRepository<Account, Long> {
 
-    Optional<Account> findByPhoneNumber(String senderPhone);
+    List<Account> findAllByPhoneNumber(String phoneNumber);
+
+    Optional<Account> findByPhoneNumber(String phoneNumber);
+
     List<Account> findByPersonUserId(Long userId);
+
 }

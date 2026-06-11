@@ -61,8 +61,8 @@ public class TransactionService {
         accountRepository.save(receiver);
 
         Transaction transaction = new Transaction();
-        transaction.setSenderId(sender.getAccount_id());
-        transaction.setReceiverId(receiver.getAccount_id());
+        transaction.setSenderId(sender.getAccountId());
+        transaction.setReceiverId(receiver.getAccountId());
         transaction.setAmount(transactionTransferDto.getAmount());
         transaction.setStatus(true);
         transaction.setSending_time(LocalTime.now());
@@ -80,7 +80,7 @@ public class TransactionService {
         for (Account account : accounts) {
 
             List<Transaction> transactions =
-                    transactionRepository.findBySenderId(account.getAccount_id());
+                    transactionRepository.findBySenderId(account.getAccountId());
 
             for (Transaction tx : transactions) {
 

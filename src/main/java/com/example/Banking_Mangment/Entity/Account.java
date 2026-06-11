@@ -13,25 +13,29 @@ import java.util.List;
 @NoArgsConstructor
 @Data
 public class Account {
+
     @Id
-    private Long account_id;
+    private Long accountId;
 
-    @Column(name = "phone no.", unique = true, nullable = false)
-    @Pattern(regexp = "^\\d{10}$", message = "Value must be exactly 10 digits")
+    @Column(nullable = false)
+    @Pattern(
+            regexp = "^\\d{10}$",
+            message = "Phone number must be exactly 10 digits"
+    )
+
     private String phoneNumber;
-
-    @ManyToOne
-    @JoinColumn(name = "personId")
-    private Person person;
 
     private double balance;
 
     private LocalTime created_at;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "person_id")
+    private Person person;
+
     @OneToMany(mappedBy = "account")
     private List<Loan> loans = new ArrayList<>();
+
     @OneToMany(mappedBy = "account")
     private List<Insurance> insurances = new ArrayList<>();
-
-
 }
