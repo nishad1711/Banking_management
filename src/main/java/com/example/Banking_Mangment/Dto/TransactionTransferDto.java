@@ -13,8 +13,6 @@ import lombok.ToString;
 @ToString
 public class TransactionTransferDto {
     @Pattern(regexp = "^\\d{10}$", message = "Value must be exactly 10 digits")
-    private String senderPhone;
-    @Pattern(regexp = "^\\d{10}$", message = "Value must be exactly 10 digits")
     private String receiverPhone;
     private double amount;
 }

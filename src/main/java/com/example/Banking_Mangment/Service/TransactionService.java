@@ -1,14 +1,19 @@
 package com.example.Banking_Mangment.Service;
 
+import com.example.Banking_Mangment.Dto.ChangePrimaryAccountDto;
 import com.example.Banking_Mangment.Dto.PersonTransactionalHistoryDto;
 import com.example.Banking_Mangment.Dto.TransactionTransferDto;
 import com.example.Banking_Mangment.Dto.TransactiondetailsDto;
 import com.example.Banking_Mangment.Entity.Account;
+import com.example.Banking_Mangment.Entity.Person;
 import com.example.Banking_Mangment.Entity.Transaction;
 import com.example.Banking_Mangment.Repository.AccountRepository;
+import com.example.Banking_Mangment.Repository.PersonRepository;
 import com.example.Banking_Mangment.Repository.TransactionRepository;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +22,6 @@ import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 
-
 @Service
 @RequiredArgsConstructor
 public class TransactionService {
@@ -25,41 +29,56 @@ public class TransactionService {
     private final AccountRepository accountRepository;
     private final TransactionRepository transactionRepository;
     private final ModelMapper modelMapper;
+    private final PersonRepository personRepository;
 
-    @Transactional // CRITICAL: Ensures the database rolls back if an error occurs mid-transfer
+    @Transactional
     public TransactiondetailsDto transferMoney(TransactionTransferDto transactionTransferDto) {
 
-        // 1. Prevent sending money to yourself
-        if (transactionTransferDto.getReceiverPhone().equals(transactionTransferDto.getSenderPhone())) {
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String senderPhone = authentication.getName();
+
+        // Prevent sending money to yourself
+        if (transactionTransferDto.getReceiverPhone().equals(senderPhone)) {
             throw new RuntimeException("Cannot transfer money to your own account");
         }
 
-        // 2. Prevent negative or zero transfers
+        // Prevent negative or zero transfers
         if (transactionTransferDto.getAmount() <= 0) {
             throw new RuntimeException("Transfer amount must be greater than zero");
         }
 
-        // 3. Fetch Sender Account
-        Account sender = accountRepository.findByPhoneNumber(transactionTransferDto.getSenderPhone())
-                .orElseThrow(() -> new RuntimeException("Sender account not found"));
+        // Fetch Sender Primary Account
+        Account sender = accountRepository
+                .findByPhoneNumberAndPrimaryAccountTrue(senderPhone)
+                .orElseThrow(() ->
+                        new RuntimeException("Sender primary account not found"));
 
-        // 4. Fetch Receiver Account
-        Account receiver = accountRepository.findByPhoneNumber(transactionTransferDto.getReceiverPhone())
-                .orElseThrow(() -> new RuntimeException("Receiver account not found"));
+        // Fetch Receiver Primary Account
+        Account receiver = accountRepository
+                .findByPhoneNumberAndPrimaryAccountTrue(
+                        transactionTransferDto.getReceiverPhone())
+                .orElseThrow(() ->
+                        new RuntimeException("Receiver primary account not found"));
 
-        // 5. Check if Sender has enough money
+        // Check balance
         if (sender.getBalance() < transactionTransferDto.getAmount()) {
             throw new RuntimeException("Insufficient balance for transfer");
         }
 
-        // 6. Perform the math
-        sender.setBalance(sender.getBalance() - transactionTransferDto.getAmount());
-        receiver.setBalance(receiver.getBalance() + transactionTransferDto.getAmount());
+        // Debit sender
+        sender.setBalance(
+                sender.getBalance() - transactionTransferDto.getAmount());
 
-        // 7. Save both accounts to the database
+        // Credit receiver
+        receiver.setBalance(
+                receiver.getBalance() + transactionTransferDto.getAmount());
+
         accountRepository.save(sender);
         accountRepository.save(receiver);
 
+        // Save transaction
         Transaction transaction = new Transaction();
         transaction.setSenderId(sender.getAccountId());
         transaction.setReceiverId(receiver.getAccountId());
@@ -69,13 +88,23 @@ public class TransactionService {
         transaction.setSending_date(LocalDate.now());
 
         transactionRepository.save(transaction);
+
         return modelMapper.map(transaction, TransactiondetailsDto.class);
     }
-    public List<PersonTransactionalHistoryDto> personTransactionalHistory(long userId) {
 
-        List<Account> accounts =  accountRepository.findByPersonUserId(userId);
+    public List<PersonTransactionalHistoryDto> personTransactionalHistory(String phoneNumber) {
 
-        List<PersonTransactionalHistoryDto> history = new ArrayList<>();
+        Person person = personRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        Long userId = person.getUserId();
+
+        List<Account> accounts =
+                accountRepository.findByPersonUserId(userId);
+
+        List<PersonTransactionalHistoryDto> history =
+                new ArrayList<>();
 
         for (Account account : accounts) {
 
@@ -86,10 +115,16 @@ public class TransactionService {
 
                 Account receiverAccount =
                         accountRepository.findById(tx.getReceiverId())
-                                .orElseThrow();
+                                .orElseThrow(() ->
+                                        new RuntimeException("Receiver account not found"));
 
-                String receiverName =
-                        receiverAccount.getPerson().getName();
+                String receiverName;
+
+                if (receiverAccount.getPerson() != null) {
+                    receiverName = receiverAccount.getPerson().getName();
+                } else {
+                    receiverName = "Not Registered";
+                }
 
                 PersonTransactionalHistoryDto dto =
                         new PersonTransactionalHistoryDto(
@@ -106,5 +141,40 @@ public class TransactionService {
         }
 
         return history;
+    }
+    @Transactional
+    public void changePrimaryAccount(ChangePrimaryAccountDto dto) {
+
+        Authentication authentication =
+                SecurityContextHolder.getContext().getAuthentication();
+
+        String phoneNumber = authentication.getName();
+
+        Person person = personRepository.findByPhoneNumber(phoneNumber)
+                .orElseThrow(() ->
+                        new RuntimeException("User not found"));
+
+        List<Account> accounts =
+                accountRepository.findByPersonUserId(person.getUserId());
+
+        Account selectedAccount = null;
+
+        for (Account account : accounts) {
+
+            if (account.getAccountId().equals(dto.getAccountId())) {
+                selectedAccount = account;
+            }
+
+            account.setPrimaryAccount(false);
+        }
+
+        if (selectedAccount == null) {
+            throw new RuntimeException(
+                    "This account does not belong to the logged-in user");
+        }
+
+        selectedAccount.setPrimaryAccount(true);
+
+        accountRepository.saveAll(accounts);
     }
 }

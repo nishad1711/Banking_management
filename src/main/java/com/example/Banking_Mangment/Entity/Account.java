@@ -25,6 +25,9 @@ public class Account {
 
     private String phoneNumber;
 
+    @Column(nullable = false)
+    private boolean primaryAccount;
+
     private double balance;
 
     private LocalTime created_at;

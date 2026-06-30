@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -25,18 +26,19 @@ public class AuthService {
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
     private final AccountRepository accountRepository;
+    private final JwtService jwtService;
 
     public AuthResponse signup(SignupRequest request) {
         List<Account> accounts =
                 accountRepository.findAllByPhoneNumber(
                         request.getPhoneNumber());
 
-        if(accounts.isEmpty()) {
+        if (accounts.isEmpty()) {
             throw new RuntimeException(
                     "No bank account linked with this phone number");
         }
 
-        if(personRepository.existsByPhoneNumber(
+        if (personRepository.existsByPhoneNumber(
                 request.getPhoneNumber())) {
 
             throw new RuntimeException(
@@ -59,15 +61,18 @@ public class AuthService {
         person.setCreated_at_d(LocalDate.now());
 
         personRepository.save(person);
-        for(Account account : accounts) {
+        for (Account account : accounts) {
             account.setPerson(person);
         }
 
         accountRepository.saveAll(accounts);
 
         return new AuthResponse(
-                "User registered successfully");
+                "User registered successfully",
+                null
+        );
     }
+
     public AuthResponse login(LoginRequest request) {
 
         Authentication authentication =
@@ -78,13 +83,15 @@ public class AuthService {
                         )
                 );
 
-        if(authentication.isAuthenticated()) {
+        UserDetails userDetails =
+                (UserDetails) authentication.getPrincipal();
 
-            return new AuthResponse(
-                    "Login Successful");
-        }
+        String token =
+                jwtService.generateToken(userDetails);
 
-        throw new RuntimeException(
-                "Invalid Credentials");
+        return new AuthResponse(
+                "Login Successful",
+                token
+        );
     }
 }

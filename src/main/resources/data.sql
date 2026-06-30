@@ -1,19 +1,19 @@
---Accounts
+-- Accounts
 
-INSERT INTO account (account_id, phone_number, balance, created_at)
-VALUES (1001, '1234567890', 5000, CURRENT_TIME);
+INSERT INTO account (account_id, phone_number, balance, primary_account, created_at)
+VALUES (1001, '1234567890', 5000, TRUE, CURRENT_TIME);
 
-INSERT INTO account (account_id, phone_number, balance, created_at)
-VALUES (1002, '1234567890', 15000, CURRENT_TIME);
+INSERT INTO account (account_id, phone_number, balance, primary_account, created_at)
+VALUES (1002, '1234567890', 15000, FALSE, CURRENT_TIME);
 
-INSERT INTO account (account_id, phone_number, balance, created_at)
-VALUES (1003, '2345678901', 250, CURRENT_TIME);
+INSERT INTO account (account_id, phone_number, balance, primary_account, created_at)
+VALUES (1003, '2345678901', 250, TRUE, CURRENT_TIME);
 
-INSERT INTO account (account_id, phone_number, balance, created_at)
-VALUES (1004, '2345678901', 99999, CURRENT_TIME);
+INSERT INTO account (account_id, phone_number, balance, primary_account, created_at)
+VALUES (1004, '2345678901', 99999, FALSE, CURRENT_TIME);
 
-INSERT INTO account (account_id, phone_number, balance, created_at)
-VALUES (1005, '3456789012', 1200, CURRENT_TIME);
+INSERT INTO account (account_id, phone_number, balance, primary_account, created_at)
+VALUES (1005, '3456789012', 1200, TRUE, CURRENT_TIME);
 -- LOAN SCHEMES
 
 -- HOME LOANS
