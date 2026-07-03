@@ -28,15 +28,19 @@ public class SecurityConfig {
                         .requestMatchers(
                                 "/auth/signup",
                                 "/auth/login",
+                                "/auth/verify-pin",
                                 "/error"
                         ).permitAll()
                         .anyRequest()
                         .authenticated()
                 )
+
+                // JWT Filter
                 .addFilterBefore(
                         jwtAuthenticationFilter,
                         UsernamePasswordAuthenticationFilter.class
                 );
+
 
         return http.build();
     }

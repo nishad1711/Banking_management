@@ -83,4 +83,27 @@ public class JwtService {
 
         return Keys.hmacShaKeyFor(keyBytes);
     }
+
+    public String generatePinToken(String phoneNumber) {
+
+        return Jwts.builder()
+                .subject(phoneNumber)
+                .claim("type", "PIN")
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 2 * 60 * 1000))
+                .signWith(getSignInKey())
+                .compact();
+    }
+    public boolean isPinTokenValid(String token) {
+
+        try {
+            Claims claims = extractAllClaims(token);
+
+            return "PIN".equals(claims.get("type"))
+                    && !claims.getExpiration().before(new Date());
+
+        } catch (Exception e) {
+            return false;
+        }
+    }
 }

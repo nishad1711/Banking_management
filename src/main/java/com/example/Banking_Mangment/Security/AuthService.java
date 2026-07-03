@@ -1,8 +1,6 @@
 package com.example.Banking_Mangment.Security;
 
-import com.example.Banking_Mangment.Dto.AuthResponse;
-import com.example.Banking_Mangment.Dto.LoginRequest;
-import com.example.Banking_Mangment.Dto.SignupRequest;
+import com.example.Banking_Mangment.Dto.*;
 import com.example.Banking_Mangment.Entity.Account;
 import com.example.Banking_Mangment.Entity.Person;
 import com.example.Banking_Mangment.Repository.AccountRepository;
@@ -11,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -94,4 +93,5 @@ public class AuthService {
                 token
         );
     }
+
 }

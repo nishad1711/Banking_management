@@ -4,8 +4,9 @@ import com.example.Banking_Mangment.Dto.ChangePrimaryAccountDto;
 import com.example.Banking_Mangment.Dto.PersonTransactionalHistoryDto;
 import com.example.Banking_Mangment.Dto.TransactionTransferDto;
 import com.example.Banking_Mangment.Dto.TransactiondetailsDto;
+import com.example.Banking_Mangment.Service.PinVerificationService;
 import com.example.Banking_Mangment.Service.TransactionService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
@@ -14,24 +15,41 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/transaction")
+@RequiredArgsConstructor
 public class TransactionController {
-    @Autowired
-    private TransactionService transactionService;
+
+    private final TransactionService transactionService;
+    private final PinVerificationService pinVerificationService;
+
     @PostMapping("/transfermoney")
-    public ResponseEntity<TransactiondetailsDto> sentmoney(@RequestBody TransactionTransferDto transactionTransferDto) {
-       return ResponseEntity.ok(transactionService.transferMoney(transactionTransferDto));
+    public ResponseEntity<TransactiondetailsDto> sentmoney(
+            @RequestBody TransactionTransferDto transactionTransferDto,
+            @RequestHeader("X-PIN") String pin) {
+
+        pinVerificationService.verifyPin(pin);
+
+        return ResponseEntity.ok(
+                transactionService.transferMoney(transactionTransferDto));
     }
+
     @GetMapping("/history")
     public ResponseEntity<List<PersonTransactionalHistoryDto>> getHistory(
-            Authentication authentication) {
+            Authentication authentication,
+            @RequestHeader("X-PIN") String pin) {
+
+        pinVerificationService.verifyPin(pin);
 
         return ResponseEntity.ok(
                 transactionService.personTransactionalHistory(
                         authentication.getName()));
     }
+
     @PutMapping("/change-primary-account")
     public ResponseEntity<String> changePrimaryAccount(
-            @RequestBody ChangePrimaryAccountDto dto) {
+            @RequestBody ChangePrimaryAccountDto dto,
+            @RequestHeader("X-PIN") String pin) {
+
+        pinVerificationService.verifyPin(pin);
 
         transactionService.changePrimaryAccount(dto);
 

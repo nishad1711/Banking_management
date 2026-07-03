@@ -5,6 +5,7 @@ import com.example.Banking_Mangment.Entity.InsuranceSchema;
 import com.example.Banking_Mangment.Entity.LoanSchema;
 import com.example.Banking_Mangment.Entity.Type.InsuranceType;
 import com.example.Banking_Mangment.Service.InsuranceService;
+import com.example.Banking_Mangment.Service.PinVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.List;
 public class InsuranceSchemaController {
 
     private final InsuranceService insuranceService;
+    private final PinVerificationService pinVerificationService;
 
     @GetMapping("/AvailableInsurance")
     public ResponseEntity<Page<InsuranceSchema>> getAvailableInsurance(
@@ -60,9 +62,10 @@ public class InsuranceSchemaController {
 
             @RequestParam Long accountId,
 
-            @RequestParam Long insuranceSchemaId
+            @RequestParam Long insuranceSchemaId,
+            @RequestHeader("X-PIN") String pin
     ) {
-
+        pinVerificationService.verifyPin(pin);
         return ResponseEntity.ok(
                 insuranceService.applyInsurance(
                         accountId,

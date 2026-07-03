@@ -26,24 +26,12 @@ public class AccountService {
         return accountrepo.findByPersonUserId(person.getUserId());
     }
 
-    // Returns a specific account only if it belongs to the logged-in user
-    public Account findMyAccount(Long accountId, String phoneNumber) {
+    // Returns the current primary account of the logged-in user
+    public Account getCurrentAccount(String phoneNumber) {
 
-        Person person = personRepository.findByPhoneNumber(phoneNumber)
+        return accountrepo
+                .findByPhoneNumberAndPrimaryAccountTrue(phoneNumber)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
-
-        List<Account> accounts =
-                accountrepo.findByPersonUserId(person.getUserId());
-
-        for (Account account : accounts) {
-
-            if (account.getAccountId().equals(accountId)) {
-                return account;
-            }
-        }
-
-        throw new RuntimeException(
-                "This account does not belong to the logged-in user");
+                        new RuntimeException("Primary account not found"));
     }
 }

@@ -5,6 +5,7 @@ import com.example.Banking_Mangment.Entity.LoanSchema;
 import com.example.Banking_Mangment.Entity.Type.LoanProviderType;
 import com.example.Banking_Mangment.Entity.Type.LoanType;
 import com.example.Banking_Mangment.Service.LoanService;
+import com.example.Banking_Mangment.Service.PinVerificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.List;
 public class LoanSchemaController {
 
     private final LoanService loanService;
+    private final PinVerificationService pinVerificationService;
 
     @GetMapping("/available")
     public ResponseEntity<Page<LoanSchema>> getLoans(
@@ -66,9 +68,10 @@ public class LoanSchemaController {
 
             @RequestParam Long loanSchemaId,
 
-            @RequestParam Double amount
+            @RequestParam Double amount,
+            @RequestHeader("X-PIN") String pin
     ) {
-
+        pinVerificationService.verifyPin(pin);
         return ResponseEntity.ok(
                 loanService.applyLoan(
                         accountId,

@@ -1,8 +1,6 @@
 package com.example.Banking_Mangment.Controller;
 
-import com.example.Banking_Mangment.Dto.AuthResponse;
-import com.example.Banking_Mangment.Dto.LoginRequest;
-import com.example.Banking_Mangment.Dto.SignupRequest;
+import com.example.Banking_Mangment.Dto.*;
 import com.example.Banking_Mangment.Security.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -33,4 +31,5 @@ public class AuthController {
         return ResponseEntity.ok(
                 authService.login(request));
     }
+
 }

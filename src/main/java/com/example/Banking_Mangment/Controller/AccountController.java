@@ -25,15 +25,12 @@ public class AccountController {
                 accountService.getMyAccounts(authentication.getName()));
     }
 
-    // Get a specific account of the logged-in user
-    @GetMapping("/{accountId}")
-    public ResponseEntity<Account> getAccount(
-            @PathVariable Long accountId,
+    // Get current primary account
+    @GetMapping
+    public ResponseEntity<Account> getCurrentAccount(
             Authentication authentication) {
 
         return ResponseEntity.ok(
-                accountService.findMyAccount(
-                        accountId,
-                        authentication.getName()));
+                accountService.getCurrentAccount(authentication.getName()));
     }
 }
