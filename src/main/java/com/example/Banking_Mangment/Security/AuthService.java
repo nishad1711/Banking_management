@@ -1,15 +1,18 @@
 package com.example.Banking_Mangment.Security;
 
-import com.example.Banking_Mangment.Dto.*;
+import com.example.Banking_Mangment.Dto.AuthResponse;
+import com.example.Banking_Mangment.Dto.LoginRequest;
+import com.example.Banking_Mangment.Dto.SignupRequest;
 import com.example.Banking_Mangment.Entity.Account;
 import com.example.Banking_Mangment.Entity.Person;
+import com.example.Banking_Mangment.Exception.AccountNotFoundException;
+import com.example.Banking_Mangment.Exception.PhoneNumberAlreadyRegisteredException;
 import com.example.Banking_Mangment.Repository.AccountRepository;
 import com.example.Banking_Mangment.Repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -21,6 +24,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final AuthenticationManager authenticationManager;
     private final PersonRepository personRepository;
     private final PasswordEncoder passwordEncoder;
@@ -28,19 +32,20 @@ public class AuthService {
     private final JwtService jwtService;
 
     public AuthResponse signup(SignupRequest request) {
+
         List<Account> accounts =
                 accountRepository.findAllByPhoneNumber(
                         request.getPhoneNumber());
 
         if (accounts.isEmpty()) {
-            throw new RuntimeException(
+            throw new AccountNotFoundException(
                     "No bank account linked with this phone number");
         }
 
         if (personRepository.existsByPhoneNumber(
                 request.getPhoneNumber())) {
 
-            throw new RuntimeException(
+            throw new PhoneNumberAlreadyRegisteredException(
                     "Phone Number already registered");
         }
 
@@ -60,6 +65,7 @@ public class AuthService {
         person.setCreated_at_d(LocalDate.now());
 
         personRepository.save(person);
+
         for (Account account : accounts) {
             account.setPerson(person);
         }
@@ -93,5 +99,4 @@ public class AuthService {
                 token
         );
     }
-
 }

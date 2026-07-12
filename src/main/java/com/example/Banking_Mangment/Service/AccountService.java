@@ -2,6 +2,8 @@ package com.example.Banking_Mangment.Service;
 
 import com.example.Banking_Mangment.Entity.Account;
 import com.example.Banking_Mangment.Entity.Person;
+import com.example.Banking_Mangment.Exception.PrimaryAccountNotFoundException;
+import com.example.Banking_Mangment.Exception.UserNotFoundException;
 import com.example.Banking_Mangment.Repository.AccountRepository;
 import com.example.Banking_Mangment.Repository.PersonRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,8 +23,7 @@ public class AccountService {
 
         Person person = personRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
-
+                        new UserNotFoundException("User not found"));
         return accountrepo.findByPersonUserId(person.getUserId());
     }
 
@@ -32,6 +33,7 @@ public class AccountService {
         return accountrepo
                 .findByPhoneNumberAndPrimaryAccountTrue(phoneNumber)
                 .orElseThrow(() ->
-                        new RuntimeException("Primary account not found"));
+                        new PrimaryAccountNotFoundException(
+                                "Primary account not found"));
     }
 }

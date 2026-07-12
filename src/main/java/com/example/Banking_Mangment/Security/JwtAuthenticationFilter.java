@@ -1,5 +1,6 @@
 package com.example.Banking_Mangment.Security;
 
+import com.example.Banking_Mangment.Repository.BlacklistedTokenRepository;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -20,6 +21,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetails customUserDetails;
+    private final BlacklistedTokenRepository blacklistedrepository;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -35,8 +37,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
+        if (blacklistedrepository.existsByToken(token)) {
+
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("Token has been logged out");
+
+            return;
+        }
 
         String phoneNumber = jwtService.extractUsername(token);
+
 
         if (phoneNumber != null &&
                 SecurityContextHolder.getContext().getAuthentication() == null) {

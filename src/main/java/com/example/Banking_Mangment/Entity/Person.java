@@ -1,15 +1,17 @@
 package com.example.Banking_Mangment.Entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @NoArgsConstructor
@@ -28,8 +30,10 @@ public class Person {
     @Column(unique = true, nullable = false)
     private String phoneNumber;
 
+    @JsonIgnore
     private String password;
 
+    @JsonIgnore
     private String pin;
 
     private LocalTime created_at;
@@ -37,5 +41,8 @@ public class Person {
     private LocalDate created_at_d;
 
     @OneToMany(mappedBy = "person")
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Account> accounts = new ArrayList<>();
 }

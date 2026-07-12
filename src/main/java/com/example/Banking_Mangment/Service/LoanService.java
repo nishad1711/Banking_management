@@ -6,6 +6,9 @@ import com.example.Banking_Mangment.Entity.LoanSchema;
 import com.example.Banking_Mangment.Entity.Type.LoanProviderType;
 import com.example.Banking_Mangment.Entity.Type.LoanStatus;
 import com.example.Banking_Mangment.Entity.Type.LoanType;
+import com.example.Banking_Mangment.Exception.AccountNotFoundException;
+import com.example.Banking_Mangment.Exception.InvalidTransactionException;
+import com.example.Banking_Mangment.Exception.LoanSchemeNotFoundException;
 import com.example.Banking_Mangment.Repository.AccountRepository;
 import com.example.Banking_Mangment.Repository.LoanRepository;
 import com.example.Banking_Mangment.Repository.LoanSchemaRepository;
@@ -31,10 +34,12 @@ public class LoanService {
 
         return loanSchemaRepository.findAll(pageable);
     }
+
     public List<LoanSchema> getloanbykeyword(String keyword) {
-        List<LoanSchema> Loans= loanSchemaRepository.searchLoan(keyword);
-        return Loans;
+
+        return loanSchemaRepository.searchLoan(keyword);
     }
+
     public List<LoanSchema> filterLoans(
             LoanType loanType,
             LoanProviderType providerType,
@@ -51,6 +56,7 @@ public class LoanService {
                 tenureMonths
         );
     }
+
     public Loan applyLoan(
             Long accountId,
             Long loanSchemaId,
@@ -59,15 +65,14 @@ public class LoanService {
 
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() ->
-                        new RuntimeException("Account not found"));
+                        new AccountNotFoundException("Account not found"));
 
-        LoanSchema loanSchema =
-                loanSchemaRepository.findById(loanSchemaId)
-                        .orElseThrow(() ->
-                                new RuntimeException("Loan Scheme not found"));
+        LoanSchema loanSchema = loanSchemaRepository.findById(loanSchemaId)
+                .orElseThrow(() ->
+                        new LoanSchemeNotFoundException("Loan Scheme not found"));
 
-        if(amount > loanSchema.getMaxAmount()){
-            throw new RuntimeException(
+        if (amount > loanSchema.getMaxAmount()) {
+            throw new InvalidTransactionException(
                     "Amount exceeds scheme limit");
         }
 

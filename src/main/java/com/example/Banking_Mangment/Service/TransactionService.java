@@ -7,6 +7,12 @@ import com.example.Banking_Mangment.Dto.TransactiondetailsDto;
 import com.example.Banking_Mangment.Entity.Account;
 import com.example.Banking_Mangment.Entity.Person;
 import com.example.Banking_Mangment.Entity.Transaction;
+import com.example.Banking_Mangment.Exception.AccountNotFoundException;
+import com.example.Banking_Mangment.Exception.InsufficientBalanceException;
+import com.example.Banking_Mangment.Exception.InvalidTransactionException;
+import com.example.Banking_Mangment.Exception.PrimaryAccountNotFoundException;
+import com.example.Banking_Mangment.Exception.UnauthorizedAccountAccessException;
+import com.example.Banking_Mangment.Exception.UserNotFoundException;
 import com.example.Banking_Mangment.Repository.AccountRepository;
 import com.example.Banking_Mangment.Repository.PersonRepository;
 import com.example.Banking_Mangment.Repository.TransactionRepository;
@@ -41,30 +47,35 @@ public class TransactionService {
 
         // Prevent sending money to yourself
         if (transactionTransferDto.getReceiverPhone().equals(senderPhone)) {
-            throw new RuntimeException("Cannot transfer money to your own account");
+            throw new InvalidTransactionException(
+                    "Cannot transfer money to your own account");
         }
 
         // Prevent negative or zero transfers
         if (transactionTransferDto.getAmount() <= 0) {
-            throw new RuntimeException("Transfer amount must be greater than zero");
+            throw new InvalidTransactionException(
+                    "Transfer amount must be greater than zero");
         }
 
         // Fetch Sender Primary Account
         Account sender = accountRepository
                 .findByPhoneNumberAndPrimaryAccountTrue(senderPhone)
                 .orElseThrow(() ->
-                        new RuntimeException("Sender primary account not found"));
+                        new PrimaryAccountNotFoundException(
+                                "Sender primary account not found"));
 
         // Fetch Receiver Primary Account
         Account receiver = accountRepository
                 .findByPhoneNumberAndPrimaryAccountTrue(
                         transactionTransferDto.getReceiverPhone())
                 .orElseThrow(() ->
-                        new RuntimeException("Receiver primary account not found"));
+                        new PrimaryAccountNotFoundException(
+                                "Receiver primary account not found"));
 
         // Check balance
         if (sender.getBalance() < transactionTransferDto.getAmount()) {
-            throw new RuntimeException("Insufficient balance for transfer");
+            throw new InsufficientBalanceException(
+                    "Insufficient balance for transfer");
         }
 
         // Debit sender
@@ -96,7 +107,7 @@ public class TransactionService {
 
         Person person = personRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new UserNotFoundException("User not found"));
 
         Long userId = person.getUserId();
 
@@ -116,7 +127,8 @@ public class TransactionService {
                 Account receiverAccount =
                         accountRepository.findById(tx.getReceiverId())
                                 .orElseThrow(() ->
-                                        new RuntimeException("Receiver account not found"));
+                                        new AccountNotFoundException(
+                                                "Receiver account not found"));
 
                 String receiverName;
 
@@ -142,6 +154,7 @@ public class TransactionService {
 
         return history;
     }
+
     @Transactional
     public void changePrimaryAccount(ChangePrimaryAccountDto dto) {
 
@@ -152,7 +165,7 @@ public class TransactionService {
 
         Person person = personRepository.findByPhoneNumber(phoneNumber)
                 .orElseThrow(() ->
-                        new RuntimeException("User not found"));
+                        new UserNotFoundException("User not found"));
 
         List<Account> accounts =
                 accountRepository.findByPersonUserId(person.getUserId());
@@ -169,7 +182,7 @@ public class TransactionService {
         }
 
         if (selectedAccount == null) {
-            throw new RuntimeException(
+            throw new UnauthorizedAccountAccessException(
                     "This account does not belong to the logged-in user");
         }
 

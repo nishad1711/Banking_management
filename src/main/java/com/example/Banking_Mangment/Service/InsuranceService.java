@@ -3,13 +3,13 @@ package com.example.Banking_Mangment.Service;
 import com.example.Banking_Mangment.Entity.Account;
 import com.example.Banking_Mangment.Entity.Insurance;
 import com.example.Banking_Mangment.Entity.InsuranceSchema;
-import com.example.Banking_Mangment.Entity.LoanSchema;
 import com.example.Banking_Mangment.Entity.Type.InsuranceStatus;
 import com.example.Banking_Mangment.Entity.Type.InsuranceType;
+import com.example.Banking_Mangment.Exception.AccountNotFoundException;
+import com.example.Banking_Mangment.Exception.InsurancePlanNotFoundException;
 import com.example.Banking_Mangment.Repository.AccountRepository;
 import com.example.Banking_Mangment.Repository.InsuranceRepository;
 import com.example.Banking_Mangment.Repository.InsuranceSchemaRepository;
-import com.example.Banking_Mangment.Repository.LoanSchemaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -21,6 +21,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class InsuranceService {
+
     private final InsuranceSchemaRepository insuranceSchemaRepository;
     private final InsuranceRepository insuranceRepository;
     private final AccountRepository accountRepository;
@@ -31,10 +32,12 @@ public class InsuranceService {
 
         return insuranceSchemaRepository.findAll(pageable);
     }
+
     public List<InsuranceSchema> getinsurancebykeyword(String keyword) {
-        List<InsuranceSchema> insurances= insuranceSchemaRepository.searchInsurance(keyword);
-        return insurances ;
+
+        return insuranceSchemaRepository.searchInsurance(keyword);
     }
+
     public List<InsuranceSchema> filterInsurance(
             InsuranceType type,
             Double coverageAmount,
@@ -47,6 +50,7 @@ public class InsuranceService {
                 premiumAmount
         );
     }
+
     public Insurance applyInsurance(
             Long accountId,
             Long insuranceSchemaId
@@ -54,12 +58,13 @@ public class InsuranceService {
 
         Account account = accountRepository.findById(accountId)
                 .orElseThrow(() ->
-                        new RuntimeException("Account not found"));
+                        new AccountNotFoundException("Account not found"));
 
         InsuranceSchema insuranceSchema =
                 insuranceSchemaRepository.findById(insuranceSchemaId)
                         .orElseThrow(() ->
-                                new RuntimeException("Insurance Plan not found"));
+                                new InsurancePlanNotFoundException(
+                                        "Insurance Plan not found"));
 
         Insurance insurance = new Insurance();
 
@@ -69,5 +74,4 @@ public class InsuranceService {
 
         return insuranceRepository.save(insurance);
     }
-
 }

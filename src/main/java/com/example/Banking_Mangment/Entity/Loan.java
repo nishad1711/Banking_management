@@ -1,14 +1,12 @@
 package com.example.Banking_Mangment.Entity;
 
-import com.example.Banking_Mangment.Entity.Type.LoanProviderType;
 import com.example.Banking_Mangment.Entity.Type.LoanStatus;
-import com.example.Banking_Mangment.Entity.Type.LoanType;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-import java.util.HashSet;
-import java.util.Set;
+import lombok.ToString;
 
 @Entity
 @Data
@@ -26,6 +24,9 @@ public class Loan {
 
     @ManyToOne
     @JoinColumn(name = "account_id")
+    @JsonBackReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Account account;
 
     @ManyToOne

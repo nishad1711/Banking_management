@@ -1,9 +1,12 @@
 package com.example.Banking_Mangment.Entity;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -18,11 +21,7 @@ public class Account {
     private Long accountId;
 
     @Column(nullable = false)
-    @Pattern(
-            regexp = "^\\d{10}$",
-            message = "Phone number must be exactly 10 digits"
-    )
-
+    @Pattern(regexp = "^\\d{10}$", message = "Phone number must be exactly 10 digits")
     private String phoneNumber;
 
     @Column(nullable = false)
@@ -34,11 +33,20 @@ public class Account {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "person_id")
+    @JsonManagedReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Person person;
 
     @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Loan> loans = new ArrayList<>();
 
     @OneToMany(mappedBy = "account")
+    @JsonManagedReference
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<Insurance> insurances = new ArrayList<>();
 }
